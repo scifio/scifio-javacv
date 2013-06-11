@@ -22,7 +22,6 @@
 	</properties>
 
 	<modules>
-		<module>ffmpeg</module>
 		<module>plugin</module>
 	</modules>
 
