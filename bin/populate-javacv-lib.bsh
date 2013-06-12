@@ -1,0 +1,51 @@
+url = "jar:https://javacv.googlecode.com/files/javacv-0.5-bin.zip!/";
+jarFile = new java.net.URL(url).openConnection().getJarFile();
+cppUrl = "jar:https://javacv.googlecode.com/files/javacv-0.5-cppjars.zip!/";
+cppjarFile = new java.net.URL(cppUrl).openConnection().getJarFile();
+
+ijDir = System.getProperty("ij.dir");
+libDir = new File(ijDir, "lib");
+
+void copy(input, output) {
+	buffer = new byte[16384];
+	for (;;) {
+		int count = input.read(buffer, 0, buffer.length);
+		if (count < 0) break;
+		output.write(buffer, 0, count);
+	}
+	output.close();
+}
+
+void extract(jarFile, String jarEntryPrefix, String javacvPlatform, String fijiPlatform) {
+	javacvEntryName = jarEntryPrefix + javacvPlatform + ".jar";
+	jarStream = new java.util.jar.JarInputStream(jarFile.getInputStream(jarFile.getEntry(javacvEntryName)));
+	outDir = new File(libDir, fijiPlatform);
+	if (!outDir.isDirectory()) outDir.mkdirs();
+	prefix = "com/googlecode/javacv/cpp/" + javacvPlatform + "/";
+	for (;;) {
+		entry = jarStream.getNextEntry();
+		if (entry == null) break;
+		name = entry.getName();
+		if (!name.startsWith(prefix)) continue;
+		outFile = new File(outDir, name.substring(prefix.length()));
+		if (outFile.exists()) {
+			print("Skipping " + outFile + "...");
+			continue;
+		}
+		print("Extracting " + outFile + "...");
+		copy(jarStream, new java.io.FileOutputStream(outFile));
+	}
+	jarStream.close();
+}
+
+void extract(String javacvPlatform, String fijiPlatform) {
+	extract(jarFile, "javacv-bin/javacv-", javacvPlatform, fijiPlatform);
+	extract(cppjarFile, "javacv-cppjars/opencv-2.4.5-", javacvPlatform, fijiPlatform);
+	extract(cppjarFile, "javacv-cppjars/ffmpeg-1.2-", javacvPlatform, fijiPlatform);
+}
+
+extract("windows-x86_64", "win64");
+extract("windows-x86", "win32");
+extract("macosx-x86_64", "macosx");
+extract("linux-x86_64", "linux64");
+extract("linux-x86", "linux32");
