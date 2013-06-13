@@ -18,6 +18,16 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>io.scif</groupId>
+			<artifactId>scifio</artifactId>
+			<version>0.2.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.imglib2</groupId>
+			<artifactId>imglib2</artifactId>
+			<version>${imglib2.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.googlecode.javacv</groupId>
 			<artifactId>javacv</artifactId>
 			<version>0.5</version>
