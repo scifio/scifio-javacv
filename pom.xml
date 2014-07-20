@@ -9,6 +9,7 @@
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
 		<version>2.25</version>
+		<relativePath />
 	</parent>
 
 	<artifactId>scifio-javacv</artifactId>
