@@ -43,11 +43,13 @@ import io.scif.BufferedImagePlane;
 import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Plane;
+import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
+import io.scif.util.SCIFIOMetadataTools;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -61,7 +63,6 @@ import org.scijava.plugin.Plugin;
 import com.googlecode.javacv.FFmpegFrameGrabber;
 import com.googlecode.javacv.FFmpegFrameRecorder;
 import com.googlecode.javacv.FrameRecorder.Exception;
-import com.googlecode.javacv.cpp.avutil;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
@@ -83,7 +84,7 @@ public class MovieFormat extends AbstractFormat {
 	}
 
 	@Override
-	public String[] getSuffixes() {
+	public String[] makeSuffixArray() {
 		return new String[] { "avi", "mov","mp4", "flv", "mpg", "ogv" };
 	}
 
@@ -128,27 +129,12 @@ public class MovieFormat extends AbstractFormat {
 			iMeta.setAxisLength(Axes.Y, grabber.getImageHeight());
 			iMeta.setAxisLength(Axes.TIME, grabber.getLengthInFrames());
 			final BufferedImage image = grabber.grab().getBufferedImage();
-			int pixelFormat = grabber.getPixelFormat();
-			switch (pixelFormat) {
-			case avutil.AV_PIX_FMT_MONOBLACK:
-			case avutil.AV_PIX_FMT_MONOWHITE:
-			case avutil.AV_PIX_FMT_GRAY8:
-			case avutil.AV_PIX_FMT_GRAY16BE:
-			case avutil.AV_PIX_FMT_GRAY16LE:
-				iMeta.setRGB(false);
-				break;
-			default:
-				iMeta.setRGB(false);
-			}
 			iMeta.setPixelType(AWTImageTools.getPixelType(image));
-			iMeta.setAxisLength(Axes.CHANNEL, iMeta.isRGB() ? 3 : 1);
 			iMeta.setAxisLength(Axes.Z, 1);
 			iMeta.setBitsPerPixel(grabber.getBitsPerPixel());
-			iMeta.setInterleaved(false);
 			iMeta.setLittleEndian(false);
 			iMeta.setMetadataComplete(true);
 			iMeta.setFalseColor(false);
-			iMeta.setPlaneCount(grabber.getLengthInFrames());
 			return meta;
 		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
 			throw new IOException(e);
@@ -158,7 +144,7 @@ public class MovieFormat extends AbstractFormat {
 	public static class Parser extends AbstractParser<Metadata> {
 
 		@Override
-		protected void typedParse(RandomAccessInputStream stream, Metadata meta)
+		protected void typedParse(RandomAccessInputStream stream, Metadata meta, SCIFIOConfig config)
 				throws IOException, FormatException {
 			final FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(stream.getFileName());
 			parseMetadata(grabber, meta);
@@ -173,8 +159,7 @@ public class MovieFormat extends AbstractFormat {
 	public static class Writer extends AbstractWriter<Metadata> {
 
 		private int nextPlaneIndex;
-		private int width;
-		private int height;
+		private long width, height;
 		private FFmpegFrameRecorder recorder;
 
 		@Override
@@ -190,9 +175,10 @@ public class MovieFormat extends AbstractFormat {
 				throw new IllegalArgumentException("Illegal image index: " + imageIndex);
 			}
 
-			width = metadata.getAxisLength(imageIndex, Axes.X);
-			height = metadata.getAxisLength(imageIndex, Axes.Y);
-			recorder = new FFmpegFrameRecorder(path, width, height);
+			final Metadata metadata = getMetadata();
+			width = metadata.get(imageIndex).getAxisLength(Axes.X);
+			height = metadata.get(imageIndex).getAxisLength(Axes.Y);
+			recorder = new FFmpegFrameRecorder(path, (int) width, (int) height);
 			recorder.setFrameRate(metadata.getFrameRate());
 			recorder.setVideoBitrate(metadata.getBitRate());
 			try {
@@ -217,8 +203,8 @@ public class MovieFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void savePlane(int imageIndex, int planeIndex, Plane plane,
-				int x, int y, int w, int h) throws FormatException, IOException {
+		public void writePlane(int imageIndex, long planeIndex, Plane plane,
+				long[] min, long[] max) throws FormatException, IOException {
 			if (imageIndex != 0) {
 				throw new IllegalArgumentException("Invalid image index: " + imageIndex);
 			}
@@ -228,18 +214,19 @@ public class MovieFormat extends AbstractFormat {
 			}
 			Metadata meta = getMetadata();
 
-			if (!isFullPlane(imageIndex, x, y, w, h)) {
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, min, max)) {
 				throw new FormatException(
 						"MovieWriter does not yet support saving image tiles.");
 			}
 
 			final BufferedImage image;
 			if (!(plane instanceof BufferedImagePlane)) {
-				int type = meta.getPixelType(imageIndex);
-				image = AWTImageTools.makeImage(plane.getBytes(), meta.getAxisLength(imageIndex, Axes.X),
-					meta.getAxisLength(0, Axes.Y), meta.getRGBChannelCount(imageIndex),
-					meta.isInterleaved(imageIndex), FormatTools.getBytesPerPixel(type),
-					FormatTools.isFloatingPoint(type), meta.isLittleEndian(imageIndex),
+				final ImageMetadata imageMeta = meta.get(0);
+				int type = imageMeta.getPixelType();
+				image = AWTImageTools.makeImage(plane.getBytes(), (int) imageMeta.getAxisLength(Axes.X),
+					(int) imageMeta.getAxisLength(Axes.Y), (int) imageMeta.getAxisLength(Axes.CHANNEL),
+					imageMeta.getInterleavedAxisCount() > 0, FormatTools.getBytesPerPixel(type),
+					FormatTools.isFloatingPoint(type), imageMeta.isLittleEndian(),
 					FormatTools.isSigned(type));
 			}
 			else {
@@ -255,6 +242,10 @@ public class MovieFormat extends AbstractFormat {
 			nextPlaneIndex++;
 		}
 
+		@Override
+		protected String[] makeCompressionTypes() {
+			return new String[0];
+		}
 	}
 
 	public static class Reader extends BufferedImageReader<Metadata> {
@@ -263,8 +254,9 @@ public class MovieFormat extends AbstractFormat {
 		private String path;
 		private int nextPlaneIndex;
 
-		public Reader() {
-			domains = new String[] { FormatTools.GRAPHICS_DOMAIN };
+		@Override
+		public String[] createDomainArray() {
+			return new String[] { FormatTools.GRAPHICS_DOMAIN };
 		}
 
 		@Override
@@ -303,9 +295,17 @@ public class MovieFormat extends AbstractFormat {
 		}
 
 		@Override
-		public BufferedImagePlane openPlane(int imageIndex, int planeIndex,
-				BufferedImagePlane plane, int x, int y, int w, int h)
+		public BufferedImagePlane openPlane(int imageIndex, long planeIndex,
+				BufferedImagePlane plane, long[] min, long[] max)
 				throws FormatException, IOException {
+			return openPlane(imageIndex, planeIndex, plane, min, max, null);
+		}
+
+		@Override
+		public BufferedImagePlane openPlane(int imageIndex, long planeIndex,
+			BufferedImagePlane plane, long[] min, long[] max,
+			SCIFIOConfig config) throws FormatException, IOException
+		{
 			if (imageIndex != 0) {
 				throw new IllegalArgumentException("Illegal image index: " + imageIndex);
 			}
@@ -317,12 +317,11 @@ public class MovieFormat extends AbstractFormat {
 			try {
 				final BufferedImage image = grabber.grab().getBufferedImage();
 				nextPlaneIndex++;
-				plane.setData(AWTImageTools.getSubimage(image, false, x, y, w, h));
+				plane.setData(AWTImageTools.getSubimage(image, false, (int) min[0], (int) min[1], (int) max[0], (int) max[1]));
 				return plane;
 			} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
 				throw new IOException(e);
 			}
 		}
 	}
-
 }

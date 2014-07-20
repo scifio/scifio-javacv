@@ -36,9 +36,9 @@
 package io.scif.javacv.utests;
 
 import static org.junit.Assert.assertTrue;
-import io.scif.io.img.ImgIOException;
-import io.scif.io.img.ImgOpener;
-import io.scif.io.img.ImgSaver;
+import io.scif.img.ImgIOException;
+import io.scif.img.ImgOpener;
+import io.scif.img.ImgSaver;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,9 +46,9 @@ import java.io.IOException;
 import net.imglib2.IterableInterval;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgPlus;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
+import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.view.Views;
 
@@ -90,7 +90,7 @@ public class MovieIOTest {
 		saver.saveImg(file.getAbsolutePath(), imgPlus);
 
 		final ImgOpener opener = new ImgOpener(context);
-		Img<UnsignedByteType> img2 = opener.openImg(file.getAbsolutePath());
+		Img<UnsignedByteType> img2 = (Img<UnsignedByteType>) opener.openImg(file.getAbsolutePath());
 		assertTrue(TestImgStatistics.match(cropped, img2, 10));
 	}
 
