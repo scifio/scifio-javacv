@@ -12,7 +12,9 @@
 		<relativePath />
 	</parent>
 
+	<groupId>io.scif</groupId>
 	<artifactId>scifio-javacv</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
 
 	<name>javacv-based I/O for SCIFIO</name>
 	<description>javacv is a great library wrapping LibAV (formerly known as FFMPEG) to read and write movies. This plugin uses javacv to access that library via SCIFIO.</description>
