@@ -62,6 +62,7 @@ import org.scijava.plugin.Plugin;
 
 import com.googlecode.javacv.FFmpegFrameGrabber;
 import com.googlecode.javacv.FFmpegFrameRecorder;
+import com.googlecode.javacv.FrameGrabber.Exception;
 import com.googlecode.javacv.FrameRecorder.Exception;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
@@ -136,7 +137,7 @@ public class MovieFormat extends AbstractFormat {
 			iMeta.setMetadataComplete(true);
 			iMeta.setFalseColor(false);
 			return meta;
-		} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+		} catch (FrameGrabber.Exception e) {
 			throw new IOException(e);
 		}
 	}
@@ -150,7 +151,7 @@ public class MovieFormat extends AbstractFormat {
 			parseMetadata(grabber, meta);
 			try {
 				grabber.stop();
-			} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+			} catch (FrameGrabber.Exception e) {
 				throw new IOException(e);
 			}
 		}
@@ -183,7 +184,7 @@ public class MovieFormat extends AbstractFormat {
 			recorder.setVideoBitrate(metadata.getBitRate());
 			try {
 				recorder.start();
-			} catch (Exception e) {
+			} catch (FrameRecorder.Exception e) {
 				throw new IOException(e);
 			}
 
@@ -196,7 +197,7 @@ public class MovieFormat extends AbstractFormat {
 			try {
 				recorder.stop();
 				recorder.release();
-			} catch (Exception e) {
+			} catch (FrameRecorder.Exception e) {
 				throw new IOException(e);
 			}
 			recorder = null;
@@ -235,7 +236,7 @@ public class MovieFormat extends AbstractFormat {
 
 			try {
 				recorder.record(IplImage.createFrom(image));
-			} catch (Exception e) {
+			} catch (FrameRecorder.Exception e) {
 				throw new IOException(e);
 			}
 
@@ -274,7 +275,7 @@ public class MovieFormat extends AbstractFormat {
 				setMetadata(parseMetadata(grabber, meta));
 				grabber.start();
 				nextPlaneIndex = 0;
-			} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+			} catch (FrameGrabber.Exception e) {
 				throw new IOException(e);
 			} catch (FormatException e) {
 				throw new IOException(e);
@@ -287,7 +288,7 @@ public class MovieFormat extends AbstractFormat {
 			try {
 				grabber.stop();
 				grabber.release();
-			} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+			} catch (FrameGrabber.Exception e) {
 				throw new IOException(e);
 			}
 			grabber = null;
@@ -319,7 +320,7 @@ public class MovieFormat extends AbstractFormat {
 				nextPlaneIndex++;
 				plane.setData(AWTImageTools.getSubimage(image, false, (int) min[0], (int) min[1], (int) max[0], (int) max[1]));
 				return plane;
-			} catch (com.googlecode.javacv.FrameGrabber.Exception e) {
+			} catch (FrameGrabber.Exception e) {
 				throw new IOException(e);
 			}
 		}
