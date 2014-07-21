@@ -29,9 +29,9 @@
 			<artifactId>imglib2</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
+			<groupId>org.bytedeco</groupId>
 			<artifactId>javacv</artifactId>
-			<version>0.5</version>
+			<version>0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

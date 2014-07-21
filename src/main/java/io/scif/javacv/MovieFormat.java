@@ -60,11 +60,11 @@ import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 
-import com.googlecode.javacv.FFmpegFrameGrabber;
-import com.googlecode.javacv.FFmpegFrameRecorder;
-import com.googlecode.javacv.FrameGrabber.Exception;
-import com.googlecode.javacv.FrameRecorder.Exception;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.FFmpegFrameRecorder;
+import org.bytedeco.javacv.FrameGrabber;
+import org.bytedeco.javacv.FrameRecorder;
+import org.bytedeco.javacpp.opencv_core.IplImage;
 
 /**
  * A SCIFIO format for reading and writing movies using JavaCV.
