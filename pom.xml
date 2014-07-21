@@ -45,11 +45,6 @@
 			<id>imagej.releases</id>
 			<url>http://maven.imagej.net/content/repositories/releases</url>
 		</repository>
-
-		<repository>
-			<id>javacv</id>
-			<url>http://maven2.javacv.googlecode.com/git</url>
-		</repository>
 	</repositories>
 
 </project>
