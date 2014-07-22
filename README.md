@@ -1,4 +1,4 @@
-Based on [JavaCV](http://code.google.com/p/javacv/), `scifio-javacv` provides
+Based on [JavaCV](https://github.com/bytedeco/javacv), `scifio-javacv` provides
 movie file format input/output via [SCIFIO](http://scif.io/), the Java library
 for scientific image file input/output.
 
