@@ -54,7 +54,7 @@ import io.scif.util.SCIFIOMetadataTools;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import net.imglib2.meta.Axes;
+import net.imagej.axis.Axes;
 
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;

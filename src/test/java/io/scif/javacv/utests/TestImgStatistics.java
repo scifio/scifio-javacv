@@ -40,7 +40,7 @@ import java.util.Arrays;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.util.Util;
+import net.imglib2.util.Intervals;
 
 /**
  * A container for static methods to analyze test Imgs.
@@ -93,7 +93,7 @@ public class TestImgStatistics {
 			result[i + dim + 1] = ( float )Math.sqrt( result[i + dim + 1] / result[0] - result[i] * result[i] );
 		}
 
-		long[] dims = Util.intervalDimensions( image );
+		long[] dims = Intervals.dimensionsAsLongArray( image );
 		float total = dims[0];
 		for( int i = 1; i < dim; i++ )
 			total *= dims[i];
