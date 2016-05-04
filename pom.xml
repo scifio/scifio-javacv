@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>net.imagej</groupId>
+		<groupId>io.scif</groupId>
 		<artifactId>pom-scifio</artifactId>
 		<version>10.0.0</version>
 		<relativePath />
