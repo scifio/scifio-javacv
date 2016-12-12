@@ -6,9 +6,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>io.scif</groupId>
-		<artifactId>pom-scifio</artifactId>
-		<version>10.0.0</version>
+		<groupId>org.scijava</groupId>
+		<artifactId>pom-scijava</artifactId>
+		<version>12.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -18,6 +18,18 @@
 
 	<name>javacv-based I/O for SCIFIO</name>
 	<description>javacv is a great library wrapping LibAV (formerly known as FFMPEG) to read and write movies. This plugin uses javacv to access that library via SCIFIO.</description>
+	<url>http://imagej.net/SCIFIO-JavaCV</url>
+	<inceptionYear>2013</inceptionYear>
+	<organization>
+		<name>SCIFIO</name>
+		<url>http://scif.io/</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>Simplified BSD License</name>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<developers>
 		<developer>
@@ -38,6 +50,37 @@
 			<properties><id>dscho</id></properties>
 		</contributor>
 	</contributors>
+
+	<mailingLists>
+		<mailingList>
+			<name>ImageJ Forum</name>
+			<archive>http://forum.imagej.net/</archive>
+		</mailingList>
+	</mailingLists>
+
+	<scm>
+		<connection>scm:git:git://github.com/scifio/scifio-javacv</connection>
+		<developerConnection>scm:git:git@github.com:scifio/scifio-javacv</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/scifio/scifio-javacv</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/scifio/scifio-javacv/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://jenkins.imagej.net/job/SCIFIO-JavaCV/</url>
+	</ciManagement>
+
+	<properties>
+		<package-name>io.scif.javacv</package-name>
+		<license.licenseName>bsd_2</license.licenseName>
+		<license.copyrightOwners>Board of Regents of the University of
+Wisconsin-Madison and Max Planck Institute of Molecular Cell Biology
+and Genetics.</license.copyrightOwners>
+		<license.projectName>SCIFIO format for reading and converting movie file formats.</license.projectName>
+	</properties>
 
 	<repositories>
 		<repository>
