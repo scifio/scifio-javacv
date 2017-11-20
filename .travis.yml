@@ -1,0 +1,17 @@
+language: java
+jdk: oraclejdk8
+branches:
+  only:
+  - master
+  - "/.*-[0-9]+\\..*/"
+install: true
+script: ".travis/build.sh"
+cache:
+  directories:
+  - "~/.m2/repository"
+env:
+  global:
+  - secure: I5ZXwRrVAlIfnNWMb+tz3544y6rWOZSnQ3gbYYLQp/fROQ7Ygbmr5e2f/y7q9p1/4cEMmYe6p7C2w7w1HHapfC6PTHgMYfqW4fVbBOdfSzclx2XewOyV9Xbz0zSBRVs6CxZ5LpjtiYNIm4K8k1ukyPFKLYOlgNo+J+RHlqf2iuY=
+  - secure: f+4xmw9J5JcS+PhVs0EU3fVgUFPP74LY4tFbBpSMi4W6UgibuNHeroSPzm1GnL5EOhYvpjNNlSksjyYVEoUmvgqesRULh7AOBBZOnx9oRxx41C7lWl0ooRCtMjm7ZT1jI5Li4AexDggGP/wiZMgi+QKQwQ97wqm6w6GZFZosjzc=
+  - secure: c2y3jCQOXM0RF3SpBxz1zXyFFiXMyYH8d5+8/mXjBnY3EfRBMi1L7ySDzT06xNLschuXf0K1OFB23yPTyYO/OnvotqqAwnr7W8sIRpb/1CJDCRgmZCt0Ek88sNUgzZAQzQeMZJIJQtu7zjmZlLx6vI89sRHtv4lnC+JA+HjW2zc=
+  - secure: Acpe9R8cbRdRAKupG5Qr+ahmJjY73XtLALpFMBL7MV0y4+wklPrHdXF376JI492CDeqMzI97I+A624L5SMtkaF3Bafc8e1ztL/BvhohkNCyBDM37b+eWxjVCjHEFf25h97wxTV7A9Sg8zmT8mG5kDyE5kIJvVZAzTXh2vDpjN3I=

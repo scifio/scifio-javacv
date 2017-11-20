@@ -69,8 +69,8 @@
 		<url>https://github.com/scifio/scifio-javacv/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/job/SCIFIO-JavaCV/</url>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/scifio/scifio-javacv</url>
 	</ciManagement>
 
 	<properties>
