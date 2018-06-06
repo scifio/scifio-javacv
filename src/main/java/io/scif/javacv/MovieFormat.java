@@ -55,16 +55,16 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import net.imagej.axis.Axes;
+import net.imglib2.Interval;
 
-import org.scijava.log.LogService;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
-
+import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.FrameRecorder;
-import org.bytedeco.javacpp.opencv_core.IplImage;
+import org.scijava.log.LogService;
+import org.scijava.plugin.Parameter;
+import org.scijava.plugin.Plugin;
 
 /**
  * A SCIFIO format for reading and writing movies using JavaCV.
@@ -205,7 +205,8 @@ public class MovieFormat extends AbstractFormat {
 
 		@Override
 		public void writePlane(int imageIndex, long planeIndex, Plane plane,
-				long[] min, long[] max) throws FormatException, IOException {
+			Interval bounds) throws FormatException, IOException
+		{
 			if (imageIndex != 0) {
 				throw new IllegalArgumentException("Invalid image index: " + imageIndex);
 			}
@@ -215,7 +216,7 @@ public class MovieFormat extends AbstractFormat {
 			}
 			Metadata meta = getMetadata();
 
-			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, min, max)) {
+			if (!SCIFIOMetadataTools.wholePlane(imageIndex, meta, bounds)) {
 				throw new FormatException(
 						"MovieWriter does not yet support saving image tiles.");
 			}
@@ -297,15 +298,16 @@ public class MovieFormat extends AbstractFormat {
 
 		@Override
 		public BufferedImagePlane openPlane(int imageIndex, long planeIndex,
-				BufferedImagePlane plane, long[] min, long[] max)
-				throws FormatException, IOException {
-			return openPlane(imageIndex, planeIndex, plane, min, max, null);
+			BufferedImagePlane plane, Interval bounds) throws FormatException,
+			IOException
+		{
+			return openPlane(imageIndex, planeIndex, plane, bounds, null);
 		}
 
 		@Override
 		public BufferedImagePlane openPlane(int imageIndex, long planeIndex,
-			BufferedImagePlane plane, long[] min, long[] max,
-			SCIFIOConfig config) throws FormatException, IOException
+			BufferedImagePlane plane, Interval bounds, SCIFIOConfig config)
+			throws FormatException, IOException
 		{
 			if (imageIndex != 0) {
 				throw new IllegalArgumentException("Illegal image index: " + imageIndex);
@@ -318,7 +320,9 @@ public class MovieFormat extends AbstractFormat {
 			try {
 				final BufferedImage image = grabber.grab().getBufferedImage();
 				nextPlaneIndex++;
-				plane.setData(AWTImageTools.getSubimage(image, false, (int) min[0], (int) min[1], (int) max[0], (int) max[1]));
+				plane.setData(AWTImageTools.getSubimage(image, false, //
+					(int) bounds.min(0), (int) bounds.min(1), //
+					(int) bounds.max(0), (int) bounds.max(1)));
 				return plane;
 			} catch (FrameGrabber.Exception e) {
 				throw new IOException(e);
