@@ -18,7 +18,7 @@
 
 	<name>javacv-based I/O for SCIFIO</name>
 	<description>javacv is a great library wrapping LibAV (formerly known as FFMPEG) to read and write movies. This plugin uses javacv to access that library via SCIFIO.</description>
-	<url>http://imagej.net/SCIFIO-JavaCV</url>
+	<url>https://imagej.net/SCIFIO-JavaCV</url>
 	<inceptionYear>2013</inceptionYear>
 	<organization>
 		<name>SCIFIO</name>
@@ -35,7 +35,7 @@
 		<developer>
 			<id>ctrueden</id>
 			<name>Curtis Rueden</name>
-			<url>http://imagej.net/User:Rueden</url>
+			<url>https://imagej.net/User:Rueden</url>
 			<roles>
 				<role>lead</role>
 				<role>maintainer</role>
@@ -45,7 +45,7 @@
 	<contributors>
 		<contributor>
 			<name>Johannes Schindelin</name>
-			<url>http://imagej.net/User:Schindelin</url>
+			<url>https://imagej.net/User:Schindelin</url>
 			<roles><role>founder</role></roles>
 			<properties><id>dscho</id></properties>
 		</contributor>
@@ -88,7 +88,7 @@ and Genetics.</license.copyrightOwners>
 	<repositories>
 		<repository>
 			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
+			<url>https://maven.imagej.net/content/groups/public</url>
 		</repository>
 	</repositories>
 
