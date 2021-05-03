@@ -84,7 +84,7 @@ public class MovieIOTest {
 		final Context context = new Context();
 		final ImgSaver saver = new ImgSaver();
 		final ImgPlus<UnsignedByteType> imgPlus =
-				new ImgPlus<UnsignedByteType>(img, "test", new AxisType[] { Axes.X, Axes.Y, Axes.CHANNEL, Axes.TIME });
+				new ImgPlus<UnsignedByteType>(img, "test", new AxisType[] { Axes.X, Axes.Y, Axes.TIME });
 		file = File.createTempFile("write-and-read-test", ".mpg");
 		saver.saveImg(file.getAbsolutePath(), imgPlus);
 

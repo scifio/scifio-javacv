@@ -57,11 +57,11 @@ import java.io.IOException;
 import net.imagej.axis.Axes;
 import net.imglib2.Interval;
 
-import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.FrameRecorder;
+import org.bytedeco.javacv.Java2DFrameConverter;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -123,13 +123,13 @@ public class MovieFormat extends AbstractFormat {
 	private static Metadata parseMetadata(final FFmpegFrameGrabber grabber, Metadata meta) throws IOException {
 		if (meta.getImageCount() < 1) meta.createImageMetadata(1);
 		final ImageMetadata iMeta = meta.get(0);
-		try {
+		try (Java2DFrameConverter converter = new Java2DFrameConverter()) {
 			grabber.start();
 			meta.setFrameRate(grabber.getFrameRate());
 			iMeta.setAxisLength(Axes.X, grabber.getImageWidth());
 			iMeta.setAxisLength(Axes.Y, grabber.getImageHeight());
 			iMeta.setAxisLength(Axes.TIME, grabber.getLengthInFrames());
-			final BufferedImage image = grabber.grab().getBufferedImage();
+			final BufferedImage image = converter.getBufferedImage(grabber.grab());
 			iMeta.setPixelType(AWTImageTools.getPixelType(image));
 			iMeta.setAxisLength(Axes.Z, 1);
 			iMeta.setBitsPerPixel(grabber.getBitsPerPixel());
@@ -235,8 +235,8 @@ public class MovieFormat extends AbstractFormat {
 				image = ((BufferedImagePlane)plane).getData();
 			}
 
-			try {
-				recorder.record(IplImage.createFrom(image));
+			try (Java2DFrameConverter converter = new Java2DFrameConverter()) {
+				recorder.record(converter.getFrame(image));
 			} catch (FrameRecorder.Exception e) {
 				throw new IOException(e);
 			}
@@ -317,8 +317,8 @@ public class MovieFormat extends AbstractFormat {
 						"Out-of-sequence plane index: " + planeIndex
 						+ " (expected: " + nextPlaneIndex + ")");
 			}
-			try {
-				final BufferedImage image = grabber.grab().getBufferedImage();
+			try (Java2DFrameConverter converter = new Java2DFrameConverter()) {
+				final BufferedImage image = converter.getBufferedImage(grabber.grab()); 
 				nextPlaneIndex++;
 				plane.setData(AWTImageTools.getSubimage(image, false, //
 					(int) bounds.min(0), (int) bounds.min(1), //
