@@ -46,8 +46,6 @@ import io.scif.Plane;
 import io.scif.config.SCIFIOConfig;
 import io.scif.gui.AWTImageTools;
 import io.scif.gui.BufferedImageReader;
-import io.scif.io.RandomAccessInputStream;
-import io.scif.io.RandomAccessOutputStream;
 import io.scif.util.FormatTools;
 import io.scif.util.SCIFIOMetadataTools;
 
@@ -62,6 +60,9 @@ import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.FrameRecorder;
 import org.bytedeco.javacv.Java2DFrameConverter;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.FileLocation;
+import org.scijava.io.location.Location;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -145,9 +146,9 @@ public class MovieFormat extends AbstractFormat {
 	public static class Parser extends AbstractParser<Metadata> {
 
 		@Override
-		protected void typedParse(RandomAccessInputStream stream, Metadata meta, SCIFIOConfig config)
+		protected void typedParse(DataHandle<Location> stream, Metadata meta, SCIFIOConfig config)
 				throws IOException, FormatException {
-			final FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(stream.getFileName());
+			final FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(((FileLocation)stream.get()).getFile().getAbsolutePath());
 			parseMetadata(grabber, meta);
 			try {
 				grabber.stop();
@@ -164,13 +165,7 @@ public class MovieFormat extends AbstractFormat {
 		private FFmpegFrameRecorder recorder;
 
 		@Override
-		public void setDest(RandomAccessOutputStream stream, int imageIndex)
-				throws FormatException, IOException {
-			throw new IllegalArgumentException("Cannot write to RandomAccessOutputStream");
-		}
-
-		@Override
-		public void setDest(final String path, final int imageIndex)
+		public void setDest(final DataHandle<Location> path, final int imageIndex, SCIFIOConfig config)
 				throws FormatException, IOException {
 			if (imageIndex != 0) {
 				throw new IllegalArgumentException("Illegal image index: " + imageIndex);
@@ -179,7 +174,7 @@ public class MovieFormat extends AbstractFormat {
 			final Metadata metadata = getMetadata();
 			width = metadata.get(imageIndex).getAxisLength(Axes.X);
 			height = metadata.get(imageIndex).getAxisLength(Axes.Y);
-			recorder = new FFmpegFrameRecorder(path, (int) width, (int) height);
+			recorder = new FFmpegFrameRecorder(((FileLocation) path.get()).getFile().getAbsolutePath(), (int) width, (int) height);
 			recorder.setFrameRate(metadata.getFrameRate());
 			recorder.setVideoBitrate(metadata.getBitRate());
 			try {
@@ -253,7 +248,7 @@ public class MovieFormat extends AbstractFormat {
 	public static class Reader extends BufferedImageReader<Metadata> {
 
 		private FFmpegFrameGrabber grabber;
-		private String path;
+		private DataHandle<Location> path;
 		private int nextPlaneIndex;
 
 		@Override
@@ -262,15 +257,15 @@ public class MovieFormat extends AbstractFormat {
 		}
 
 		@Override
-		public String getCurrentFile() {
+		public DataHandle<Location> getHandle() {
 			return grabber == null ? null : path;
 		}
 
 		@Override
-		public void setSource(final String path) throws IOException {
+		public void setSource(final DataHandle<Location> path) throws IOException {
 			close();
 			this.path = path;
-			grabber = new FFmpegFrameGrabber(path);
+			grabber = new FFmpegFrameGrabber(((FileLocation) path.get()).getFile().getAbsolutePath());
 			try {
 				final Metadata meta = (Metadata)getFormat().createMetadata();
 				setMetadata(parseMetadata(grabber, meta));

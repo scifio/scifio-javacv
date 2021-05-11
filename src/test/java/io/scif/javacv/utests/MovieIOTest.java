@@ -35,10 +35,17 @@
 
 package io.scif.javacv.utests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import io.scif.Format;
+import io.scif.FormatException;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.img.ImgSaver;
+import io.scif.javacv.MovieFormat;
+import io.scif.services.DatasetIOService;
+import io.scif.services.FormatService;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,8 +60,10 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.view.Views;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.scijava.Context;
+import org.scijava.io.location.FileLocation;
 
 /**
  * Tests the SCIFIO format to read and write movies.
@@ -64,12 +73,27 @@ import org.scijava.Context;
 public class MovieIOTest {
 
 	private File file;
+	private Context context;
+
+	@Before
+	public void setUp() {
+		context = new Context();
+	}
 
 	@After
 	public void cleanup() {
 		if (file != null && file.exists()) {
 			assertTrue(file.delete());
 		}
+		context.dispose();
+	}
+
+	@Test
+	public void testFormat() throws FormatException {
+		DatasetIOService datasetIOService = context.service(DatasetIOService.class);
+		FormatService formatService = context.service(FormatService.class);
+		Format format = formatService.getFormat(new FileLocation("formatTest.mpg"));
+		assertEquals(MovieFormat.class, format.getClass());
 	}
 
 	@Test
@@ -81,15 +105,15 @@ public class MovieIOTest {
 		final IterableInterval<UnsignedByteType> cropped =
 				Views.iterable(Views.interval(img, new long[] { 0,  0, 0}, new long[] { width - 1, height - 1, frameCount - 3 }));
 
-		final Context context = new Context();
 		final ImgSaver saver = new ImgSaver();
 		final ImgPlus<UnsignedByteType> imgPlus =
 				new ImgPlus<UnsignedByteType>(img, "test", new AxisType[] { Axes.X, Axes.Y, Axes.TIME });
 		file = File.createTempFile("write-and-read-test", ".mpg");
 		saver.saveImg(file.getAbsolutePath(), imgPlus);
+		saver.saveImg(new FileLocation(file), imgPlus);
 
 		final ImgOpener opener = new ImgOpener(context);
-		Img<UnsignedByteType> img2 = (Img<UnsignedByteType>) opener.openImg(file.getAbsolutePath());
+		Img<UnsignedByteType> img2 = (Img<UnsignedByteType>) opener.openImgs(new FileLocation(file)).get(0);
 		assertTrue(TestImgStatistics.match(cropped, img2, 10));
 	}
 

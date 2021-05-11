@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>26.0.0</version>
+		<version>30.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -81,6 +81,8 @@ Wisconsin-Madison and Max Planck Institute of Molecular Cell Biology
 and Genetics.</license.copyrightOwners>
 		<license.projectName>SCIFIO format for reading and converting movie file formats.</license.projectName>
 
+		<javacv.version>1.5.5</javacv.version>
+
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
 	</properties>
@@ -104,7 +106,7 @@ and Genetics.</license.copyrightOwners>
 		<dependency>
 			<groupId>org.bytedeco</groupId>
 			<artifactId>javacv-platform</artifactId>
-			<version>1.5.5</version>
+			<version>${javacv.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
