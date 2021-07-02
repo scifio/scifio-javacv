@@ -1,4 +1,4 @@
-[![](https://travis-ci.org/scifio/scifio-javacv.svg?branch=master)](https://travis-ci.org/scifio/scifio-javacv)
+[![](https://github.com/scifio/scifio-javacv/actions/workflows/build-main.yml/badge.svg)](https://github.com/scifio/scifio-javacv/actions/workflows/build-main.yml)
 
 Based on [JavaCV](https://github.com/bytedeco/javacv), `scifio-javacv` provides
 movie file format input/output via [SCIFIO](http://scif.io/), the Java library
