@@ -59,7 +59,7 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/scifio/scifio-javacv</connection>
+		<connection>scm:git:https://github.com/scifio/scifio-javacv</connection>
 		<developerConnection>scm:git:git@github.com:scifio/scifio-javacv</developerConnection>
 		<tag>HEAD</tag>
 		<url>https://github.com/scifio/scifio-javacv</url>
