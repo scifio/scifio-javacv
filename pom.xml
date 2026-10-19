@@ -104,7 +104,7 @@ and Genetics.</license.copyrightOwners>
 		<dependency>
 			<groupId>org.bytedeco</groupId>
 			<artifactId>javacv</artifactId>
-			<version>0.8</version>
+			<version>1.5.14</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
